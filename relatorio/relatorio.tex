@@ -40,8 +40,8 @@
 
 \title{Relatório de Projeto: Compilador SL}
 \author{
-    Nome do Aluno \\
-    Matrícula: \\
+    Bruno Alves Braga \\
+    Matrícula: 22.1.4029 \\
     BCC328 - Construção de Compiladores I - DECOM/UFOP
 }
 \date{\today}
@@ -83,6 +83,19 @@
 \section{Resultados e Discussão}
 
 \subsection{Instruções de Uso}
+
+Para utilizar o compilador de Sl, inicie os containers com os comandos:
+
+docker-compose up -d
+docker-compose exec sl bash
+
+Dentro do diretório workspace/tp1/src/Sl/Lexer execute o comando: alex Lexer.x par worka gerar o analisador léxico.
+
+Para executar o projeto, dentro do diretório workspace, utilize o comando de auda para ver as opções:
+cabal run sl -- --help 
+
+Caso queira utilziar o analisador léxico:
+cabal run sl -- --lexer <arquivo teste>
 
 
 \subsection{Testes Realizados}
