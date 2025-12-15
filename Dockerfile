@@ -63,6 +63,9 @@ RUN wget https://github.com/bytecodealliance/wasmtime/releases/download/v25.0.1/
 # Create workspace directory
 WORKDIR /workspace
 
+COPY workspace /workspace
+
+
 # Set up persistent volume mount point
 VOLUME ["/workspace"]
 
