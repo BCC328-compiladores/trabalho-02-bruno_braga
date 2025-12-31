@@ -34,6 +34,8 @@ tokens :-
      <string> \"             { begin 0 }           
 
      <0> "func"        {simpleToken TFunc}
+     <0> "let"         {simpleToken TLet}
+     <0> "struct"      {simpleToken TStruct}
      <0> "="           {simpleToken TAssign}
      <0> "print"       {simpleToken TPrint}
      <0> "if"          {simpleToken TIf}
@@ -68,6 +70,7 @@ tokens :-
      <0> "float"       {mkType}
      <0> "char"        {mkType}
      <0> "bool"        {mkType}
+     <0> "string"        {mkType}
      <0> "true"        {simpleToken TTrue}
      <0> "false"       {simpleToken TFalse}
      <0> "void"        {mkType}
@@ -122,6 +125,8 @@ data Lexeme
   | TFloatNumber Float
   | TCharacter Char
   | TFunc 
+  | TLet 
+  | TStruct 
   | TAssign 
   | TPrint 
   | TIf 
@@ -212,7 +217,7 @@ lexer s = runAlex s go
 
 instance Show Lexeme where
     show (TIdent id) = "ID:" ++ id
-    show (TDataStructures name) = "STRUCT:" ++ name
+    show (TDataStructures name) = "STRUCTNAME:" ++ name
     show (TType string) = "TYPE:" ++ string
     show (TString string) = "STRING:" ++ string
     show (TIntNumber value) = "INT:" ++ (show value)
@@ -254,6 +259,8 @@ instance Show Lexeme where
     show (TReturn) = "RETURN"
     show (TNew) = "NEW"
     show (TFunc) = "FUNC"
+    show (TLet) = "LET"
+    show (TStruct) = "STRUCT"
     show (TEOF) = "TEOF"
 
 

@@ -63,7 +63,7 @@ library
     exposed-modules:  MyLib
                     Sl.Lexer.Lexer
                     Sl.Syntax.Syntax
-                    --Lang.Parser.Parser
+                    Sl.Parser.Parser
 
                     
 
@@ -99,6 +99,7 @@ executable sl
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.18.2.1,
+        containers,
         tp1
 
     -- Directories containing source files.

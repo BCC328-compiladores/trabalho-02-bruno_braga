@@ -38,7 +38,7 @@ data Type = TInt
     deriving (Show, Eq)
 
 data Stmt = Assign String Exp
-    | Let String (Maybe Type) (Maybe Exp)
+    | Let String Type (Maybe Exp)
     | VarDecl Type String (Maybe Exp)
     | Print Exp
     | If Exp Block (Maybe Block)

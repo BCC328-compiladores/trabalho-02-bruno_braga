@@ -3,6 +3,9 @@ module Main where
 
 import qualified Sl.Lexer.Lexer as Lex
 import System.Environment (getArgs)
+import Data.Tree (Tree(..), drawTree)
+import Sl.Syntax.Syntax
+import Sl.Parser.Parser (parseProgram)
 
 main :: IO ()
 main = do
@@ -61,7 +64,7 @@ runOptions :: Option -> IO ()
 runOptions options = do
   case flag options of
     Lexer -> lexFile (file options)
-    Parser -> putStrLn $ "Work in Progress"
+    Parser -> parseFile (file options)
     Help -> putStrLn help
 
 
@@ -69,13 +72,18 @@ runOptions options = do
 lexFile :: FilePath -> IO ()
 lexFile filepath = readFile filepath >>= Lex.runLexer 
 
--- parseFile :: FilePath -> IO ()
--- parseFile filepath = do
---   input <- readFile filepath
---   case parseProgram input of
---     Left err  -> putStrLn $ "Parser error:\n" ++ err
---     Right ast -> print ast
+parseFile :: FilePath -> IO ()
+parseFile filepath = do
+  input <- readFile filepath
+  case Lex.runAlex input parseProgram of
+    Left err  -> putStrLn $ "Parser error:\n" ++ err
+    Right ast -> putStrLn $ (drawTree (programToTree ast))
+
+programToTree :: Program -> Tree String
+programToTree (Program defs) =
+  Node "Program" (map defToTree defs)
 
 
-
-
+defToTree :: Def -> Tree String
+defToTree def =
+  Node (show def) []
