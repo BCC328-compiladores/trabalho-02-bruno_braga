@@ -169,7 +169,8 @@ StmtList
   |                                 { [] }
 
 Stmt
-  : ident '=' Exp ';'               { Assign $1 $3 }
+
+  : LValue '=' Exp ';'              { Assign $1 $3 }
 
   | typekw ident '=' Exp ';'
                                     { VarDecl (parseType $1) $2 (Just $4) }
@@ -195,8 +196,14 @@ Stmt
   | RETURN Exp ';'                  { Return (Just $2) }
   | RETURN ';'                      { Return Nothing }
 
-  | Exp ';'                         { ExpStmt $1 }
+  --| Exp ';'                         { ExpStmt $1 }
   | Block                           { BlockStmt $1 }
+
+
+LValue
+  : ident                          { LVar $1 }
+  | LValue '[' Exp ']'             { Lindex $1 $3 }
+  | LValue '.' ident               { LField $1 $3 }
 
 --------------------------------------------------
 -- EXPRESSÕES

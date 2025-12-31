@@ -37,7 +37,7 @@ data Type = TInt
     | TVar String
     deriving (Show, Eq)
 
-data Stmt = Assign String Exp
+data Stmt = Assign LValue Exp
     | Let String Type (Maybe Exp)
     | VarDecl Type String (Maybe Exp)
     | Print Exp
@@ -71,8 +71,8 @@ data Literal = LInt Int
     | LBool Bool
     deriving (Show, Eq)
 
-data LValue = --LVar String
-     Lindex LValue Exp
+data LValue = LVar String
+    | Lindex LValue Exp
     | LField LValue String
     deriving (Show, Eq) 
 
