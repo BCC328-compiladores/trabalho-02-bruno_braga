@@ -269,7 +269,8 @@ runLexer input = do
     case lexer input of
         Left err -> putStrLn $ "Lexer error: " ++ err
         Right tokens -> mapM_ (putStrLn . showLexeme) tokens
-  where
-    showLexeme (Token _ lexeme) = show lexeme
+
+showLexeme :: Token -> String
+showLexeme (Token (lin, col) lexeme) = show lin ++ ":" ++  show col ++ " " ++ show lexeme
 
 }

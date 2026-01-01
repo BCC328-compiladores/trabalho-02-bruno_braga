@@ -1,7 +1,6 @@
 func reverse(arr : int[], size : int) : int [] {
     let result : int[] = new int[size];
     let i : int = 0;
-    2
     while (i < size) {
         result[i] = arr[size - i - 1];
         i = i + 1;

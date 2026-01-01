@@ -28,6 +28,7 @@ data Field = Field String Type deriving (Show, Eq)
 
 data Type = TInt
     | TFloat
+    | TString
     | TChar
     | TBool
     | TVoid

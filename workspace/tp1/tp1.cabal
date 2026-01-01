@@ -64,6 +64,8 @@ library
                     Sl.Lexer.Lexer
                     Sl.Syntax.Syntax
                     Sl.Parser.Parser
+                    Sl.Pretty.SlPretty
+                    Utils.Pretty
 
                     
 
@@ -75,7 +77,8 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.18.2.1,
-                    array
+                    array,
+                    pretty
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -100,6 +103,7 @@ executable sl
     build-depends:
         base ^>=4.18.2.1,
         containers,
+        pretty,
         tp1
 
     -- Directories containing source files.
@@ -107,6 +111,28 @@ executable sl
 
     -- Base language which the package is written in.
     default-language: Haskell2010
+
+
+executable test
+    import: warnings
+
+    main-is: test.hs
+
+    other-modules:
+
+    build-depends:
+        base ^>=4.18.2.1,
+        containers,
+        pretty,
+        directory,
+        filepath,
+        tp1
+
+    hs-source-dirs: app
+    default-language: Haskell2010
+
+
+
 
 test-suite tp1-test
     -- Import common warning flags.

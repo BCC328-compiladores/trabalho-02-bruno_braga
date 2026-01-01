@@ -14,9 +14,6 @@ import Sl.Syntax.Syntax
 %error     { parseError }
 %lexer {lexer}{Lex.Token _ Lex.TEOF}
 
---------------------------------------------------
--- PRECEDÊNCIA E ASSOCIATIVIDADE
---------------------------------------------------
 
 %nonassoc IFX
 %nonassoc ELSE
@@ -26,19 +23,16 @@ import Sl.Syntax.Syntax
 %left '+' '-'
 %left '*' '/' '%'
 
---------------------------------------------------
--- TOKENS
---------------------------------------------------
 
 %token
 ident       { Lex.Token _ (Lex.TIdent $$) }
 structid    { Lex.Token _ (Lex.TDataStructures $$) }
-typekw      { Lex.Token _ (Lex.TType $$) }
+typelit      { Lex.Token _ (Lex.TType $$) }
 
-int_lit     { Lex.Token _ (Lex.TIntNumber $$) }
-float_lit   { Lex.Token _ (Lex.TFloatNumber $$) }
-char_lit    { Lex.Token _ (Lex.TCharacter $$) }
-string_lit  { Lex.Token _ (Lex.TString $$) }
+intlit     { Lex.Token _ (Lex.TIntNumber $$) }
+floatlit   { Lex.Token _ (Lex.TFloatNumber $$) }
+charlit    { Lex.Token _ (Lex.TCharacter $$) }
+stringlit  { Lex.Token _ (Lex.TString $$) }
 
 STRUCT      { Lex.Token _ Lex.TStruct }
 FUNC        { Lex.Token _ Lex.TFunc }
@@ -82,9 +76,7 @@ FALSE       { Lex.Token _ Lex.TFalse }
 '.'         { Lex.Token _ Lex.TDot }
 
 
---------------------------------------------------
--- GRAMÁTICA
---------------------------------------------------
+
 
 %%
 
@@ -99,9 +91,6 @@ Def
   : Function                        { FuncDef $1 }
   | Struct                          { StructDef $1 }
 
---------------------------------------------------
--- STRUCT
---------------------------------------------------
 
 Struct
   : STRUCT structid '{' FieldList '}'      { Struct  $2 $4 }
@@ -113,16 +102,14 @@ FieldList
 Field
   : ident ':' Type ';'              { Field $1 $3 }
 
---------------------------------------------------
--- FUNÇÃO
---------------------------------------------------
+
 
 Function
   : FUNC ident '(' ParamList ')' ReturnType Block
                                     { Function $2 [] $4 $6 $7 }
 
 ReturnType
-  : ':' Type                      { Just $2 }
+  : ':' Type                       { Just $2 }
   |                                { Nothing }
 
 ParamList
@@ -134,32 +121,20 @@ Param
   : ident ':' Type                  { Param $1 (Just $3) }
   | ident                           { Param $1 Nothing }
 
---------------------------------------------------
--- TIPOS
---------------------------------------------------
 
 Type
-  : BaseType TypeSuffix
-      { applyTypeSuffix $1 $2 }
+  : BaseType TypeSuffix             { applyTypeSuffix $1 $2 }
 
 BaseType
-  : typekw
-      { parseType $1 }
-  | structid
-      { TStruct $1 }
+  : typelit                         { parseType $1 }
+  | structid                        { TStruct $1 }
 
 TypeSuffix
-  : '[' ']' TypeSuffix
-      { Nothing : $3 }
-  | '[' int_lit ']' TypeSuffix
-      { Just $2 : $4 }
-  | 
-      { [] }
+  : '[' ']' TypeSuffix              { Nothing : $3 }
+  | '[' intlit ']' TypeSuffix       { Just $2 : $4 }
+  |                                 { [] }
 
 
---------------------------------------------------
--- BLOCO E STATEMENTS
---------------------------------------------------
 
 Block
   : '{' StmtList '}'                { Block $2 }
@@ -172,10 +147,10 @@ Stmt
 
   : LValue '=' Exp ';'              { Assign $1 $3 }
 
-  | typekw ident '=' Exp ';'
+  | typelit ident '=' Exp ';'
                                     { VarDecl (parseType $1) $2 (Just $4) }
 
-  | typekw ident ';'
+  | typelit ident ';'
                                     { VarDecl (parseType $1) $2 Nothing }
 
   | PRINT Exp ';'                   { Print $2 }
@@ -205,33 +180,28 @@ LValue
   | LValue '[' Exp ']'             { Lindex $1 $3 }
   | LValue '.' ident               { LField $1 $3 }
 
---------------------------------------------------
--- EXPRESSÕES
---------------------------------------------------
 
 Exp
-  : AndExp                          { $1 }
+  : NewExp                          { $1 }
 
---------------------------------------------------
--- AND LÓGICO
---------------------------------------------------
+
+NewExp
+  : NEW BaseType '[' Exp ']'        { ExpNew $2 $4 }
+  | NEW BaseType '(' Exp ')'        { ExpNew $2 $4 }
+  | AndExp                          { $1 }
+
+
 
 AndExp
   : AndExp '&&' EqExp               { ExpBinary And $1 $3 }
   | EqExp                           { $1 }
 
---------------------------------------------------
--- IGUALDADE
---------------------------------------------------
 
 EqExp
   : EqExp '==' RelExp               { ExpBinary Eq  $1 $3 }
   | EqExp '!=' RelExp               { ExpBinary Neq $1 $3 }
   | RelExp                          { $1 }
 
---------------------------------------------------
--- RELACIONAIS
---------------------------------------------------
 
 RelExp
   : RelExp '<'  AddExp              { ExpBinary Lt  $1 $3 }
@@ -240,18 +210,12 @@ RelExp
   | RelExp '>=' AddExp              { ExpBinary Geq $1 $3 }
   | AddExp                          { $1 }
 
---------------------------------------------------
--- ADITIVOS
---------------------------------------------------
 
 AddExp
   : AddExp '+' MulExp               { ExpBinary Add $1 $3 }
   | AddExp '-' MulExp               { ExpBinary Sub $1 $3 }
   | MulExp                          { $1 }
 
---------------------------------------------------
--- MULTIPLICATIVOS
---------------------------------------------------
 
 MulExp
   : MulExp '*' Postfix              { ExpBinary Mul $1 $3 }
@@ -259,9 +223,7 @@ MulExp
   | MulExp '%' Postfix              { ExpBinary Div $1 $3 }
   | Postfix                         { $1 }
 
---------------------------------------------------
--- PÓS-FIXOS (CHAMADA / INDEX / CAMPO)
---------------------------------------------------
+
 
 Postfix
   : Primary                         { $1 }
@@ -269,15 +231,11 @@ Postfix
   | Postfix '[' Exp ']'             { ExpIndex $1 $3 }
   | Postfix '.' ident               { ExpField $1 $3 }
 
---------------------------------------------------
--- PRIMÁRIOS
---------------------------------------------------
 
 Primary
   : '(' Exp ')'                     { ExpParens $2 }
   | ident                           { ExpVar $1 }
   | Literal                         { ExpLit $1 }
-  | NEW Type '(' Exp ')'            { ExpNew $2 $4 }
   | '[' ArgList ']'                 { ExpArray $2 }
   | structid '(' ArgList ')'        { ExpStruct $1 $3 }
   | structid '{' ArgList '}'        { ExpStruct $1 $3 }
@@ -288,25 +246,25 @@ ArgList
   |                                 { [] }
 
 Literal
-  : int_lit                         { LInt $1 }
-  | float_lit                       { LFloat $1 }
-  | char_lit                        { LChar $1 }
-  | string_lit                      { LString $1 }
-  | TRUE                            { LBool True }
-  | FALSE                           { LBool False }
+  : intlit                         { LInt $1 }
+  | floatlit                       { LFloat $1 }
+  | charlit                        { LChar $1 }
+  | stringlit                      { LString $1 }
+  | TRUE                           { LBool True }
+  | FALSE                          { LBool False }
 
 {
 
---------------------------------------------------
--- CÓDIGO HASKELL AUXILIAR
---------------------------------------------------
 
 parseError :: Lex.Token -> Lex.Alex a
 parseError (Lex.Token (l,c) lx) =
   Lex.alexError $
-    "Parse error at line " ++ show l ++
-    ", column " ++ show c ++
-    ", token: " ++ show lx
+    unlines
+      [ "Parse error"
+      , "  line:   " ++ show l
+      , "  column: " ++ show c
+      , "  token:  " ++ show lx
+      ]
 
 parseType :: String -> Type
 parseType "int"   = TInt
