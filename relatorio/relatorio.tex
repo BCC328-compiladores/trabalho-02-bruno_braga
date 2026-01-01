@@ -87,15 +87,28 @@
 Para utilizar o compilador de Sl, inicie os containers com os comandos:
 
 docker-compose up -d
+
 docker-compose exec sl bash
 
-Dentro do diretório workspace/tp1/src/Sl/Lexer execute o comando: alex Lexer.x par worka gerar o analisador léxico.
+\vspace{1cm}
+Para executar o projeto, dentro do diretório workspace/tp1, utilize o comando de ajuda para ver as opções:
 
-Para executar o projeto, dentro do diretório workspace, utilize o comando de auda para ver as opções:
 cabal run sl -- --help 
 
-Caso queira utilziar o analisador léxico:
+\vspace{1cm}
+Ou, para executar os casos de teste automaticamente, utilize o comando: 
+
+cabal run test
+
+\vspace{1cm}
+Caso queira utiliziar o analisador léxico:
 cabal run sl -- --lexer <arquivo teste>
+
+Caso queira utiliziar o analisador sintático:
+cabal run sl -- --parser <arquivo teste>
+
+Caso queira utiliziar o pretty printer:
+cabal run sl -- --pretty <arquivo teste>
 
 
 \subsection{Testes Realizados}

@@ -9,7 +9,6 @@ import Sl.Pretty.SlPretty ()
 import Sl.Parser.Parser (parseProgram)
 import Utils.Pretty (render, ppr)
 import System.IO
-import Trace.Hpc.Util (readFileUtf8)
 
 main :: IO ()
 main = do
@@ -55,7 +54,9 @@ printError
                             " --lexer: lexical analysis - prints the tokens",
                             " --parser: syntactic analysis - prints the syntatic data tree of the given code",
                             " --pretty: pretty printer - prints the formatted source code",
-                            " --help: shows the options suppoted by the compiler"]
+                            " --help: shows the options suppoted by the compiler",
+                            "\nOr, to run all test cases automatically:",
+                            "Cabal run test"]
 
 help :: String
 help = unlines ["This is the sl compiler!",
@@ -66,7 +67,9 @@ help = unlines ["This is the sl compiler!",
                 " --lexer: lexical analysis - prints the tokens",
                 " --parser: syntactic analysis - prints the syntatic data tree of the given code",
                 " --pretty: pretty printer - prints the formatted source code",
-                " --help: shows the options suppoted by the compiler"]
+                " --help: shows the options suppoted by the compiler",
+                "\nOr, to run all test cases automatically:",
+                "Cabal run test"]
 
 runOptions :: Option -> IO ()
 runOptions options = do

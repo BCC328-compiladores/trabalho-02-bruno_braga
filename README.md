@@ -9,5 +9,11 @@
 docker-compose up -d
 docker-compose exec sl bash
 ```
+## Relatório
 
+- Gerando relatório (dentro da pasta relatorio)
+
+```
+make
+```
 
