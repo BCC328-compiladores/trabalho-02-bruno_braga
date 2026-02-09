@@ -7,8 +7,11 @@ import Data.Tree (Tree(..), drawTree)
 import Sl.Syntax.Syntax
 import Sl.Pretty.SlPretty ()
 import Sl.Parser.Parser (parseProgram)
+import Sl.Semantics.TypeChecker.TypeChecker (checkProgram)
 import Utils.Pretty (render, ppr)
 import System.IO
+import GHC.Base (undefined)
+
 
 main :: IO ()
 main = do
@@ -23,6 +26,8 @@ data Option = Option {
 data Flag = Lexer
   | Parser
   | Pretty
+  | TypeCheck
+  | Interpreter
   | Help
   deriving Show
 
@@ -39,6 +44,8 @@ buildOption flags filepath =
     "--lexer" -> return $ Right (Option Lexer filepath)
     "--parser" -> return $ Right (Option Parser filepath)
     "--pretty" -> return $ Right (Option Pretty filepath)
+    "--typecheck" -> return $ Right (Option TypeCheck filepath)
+    "--interpret" -> return $ Right (Option Interpreter filepath)
     "--help" -> return $ Right (Option Help filepath)
     _ -> printError
 
@@ -54,9 +61,9 @@ printError
                             " --lexer: lexical analysis - prints the tokens",
                             " --parser: syntactic analysis - prints the syntatic data tree of the given code",
                             " --pretty: pretty printer - prints the formatted source code",
-                            " --help: shows the options suppoted by the compiler",
-                            "\nOr, to run all test cases automatically:",
-                            "Cabal run test"]
+                            " --typecheck: type checker - verifies the typing integrity of the code",
+                            " --interpret: interpreter - runs the interpreter for the input code",
+                            " --help: shows the options suppoted by the compiler"]
 
 help :: String
 help = unlines ["This is the sl compiler!",
@@ -67,9 +74,9 @@ help = unlines ["This is the sl compiler!",
                 " --lexer: lexical analysis - prints the tokens",
                 " --parser: syntactic analysis - prints the syntatic data tree of the given code",
                 " --pretty: pretty printer - prints the formatted source code",
-                " --help: shows the options suppoted by the compiler",
-                "\nOr, to run all test cases automatically:",
-                "Cabal run test"]
+                " --typecheck: type checker - verifies the typing integrity of the code",
+                " --interpret: interpreter - runs the interpreter for the input code",
+                " --help: shows the options suppoted by the compiler"]
 
 runOptions :: Option -> IO ()
 runOptions options = do
@@ -77,6 +84,8 @@ runOptions options = do
     Lexer -> lexFile (file options)
     Parser -> parseFile (file options)
     Pretty -> prettyFile (file options)
+    TypeCheck -> typeCheckFile (file options)
+    Interpreter -> interpretFile (file options)
     Help -> putStrLn help
 
 
@@ -97,6 +106,22 @@ prettyFile filepath = do
   case Lex.runAlex input parseProgram of
     Left err  -> putStrLn $ "Parser error:\n" ++ err
     Right ast -> putStrLn $ render (ppr ast)
+
+typeCheckFile :: FilePath -> IO ()
+typeCheckFile filepath = do
+  input <- readFileUtf8 filepath
+  case Lex.runAlex input parseProgram of
+    Left err ->
+      putStrLn $ "Parser error:\n" ++ err
+
+    Right ast ->
+      case checkProgram ast of
+        Left typeErr ->
+          putStrLn $ "Type error:\n" ++ typeErr
+        Right () ->
+          putStrLn "Type checking successful"
+
+interpretFile = undefined
 
 
 programToTree :: Program -> Tree String

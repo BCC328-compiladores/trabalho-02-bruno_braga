@@ -123,9 +123,9 @@ Param
 
 
 Type
-  : BaseType TypeSuffix             { applyTypeSuffix $1 $2 }
+  : DefaultType TypeSuffix             { applyTypeSuffix $1 $2 }
 
-BaseType
+DefaultType
   : typelit                         { parseType $1 }
   | structid                        { TStruct $1 }
 
@@ -186,8 +186,8 @@ Exp
 
 
 NewExp
-  : NEW BaseType '[' Exp ']'        { ExpNew $2 $4 }
-  | NEW BaseType '(' Exp ')'        { ExpNew $2 $4 }
+  : NEW DefaultType '[' Exp ']'     { ExpNew $2 $4 }
+  | NEW DefaultType '(' Exp ')'     { ExpNew $2 $4 }
   | AndExp                          { $1 }
 
 
@@ -272,6 +272,7 @@ parseType "float" = TFloat
 parseType "char"  = TChar
 parseType "bool"  = TBool
 parseType "void"  = TVoid
+parseType "string" = TString
 parseType x       = TVar x
 
 applyTypeSuffix :: Type -> [Maybe Int] -> Type

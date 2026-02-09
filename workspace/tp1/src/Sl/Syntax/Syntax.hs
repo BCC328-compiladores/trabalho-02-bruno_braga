@@ -38,14 +38,14 @@ data Type = TInt
     | TVar String
     deriving (Show, Eq)
 
-data Stmt = Assign LValue Exp
-    | Let String Type (Maybe Exp)
-    | VarDecl Type String (Maybe Exp)
-    | Print Exp
-    | If Exp Block (Maybe Block)
-    | While Exp Block
-    | For Stmt Exp Stmt Block
-    | Return (Maybe Exp)
+data Stmt = Assign LValue Exp --
+    | Let String Type (Maybe Exp) --
+    | VarDecl Type String (Maybe Exp) --
+    | Print Exp --
+    | If Exp Block (Maybe Block) --
+    | While Exp Block --
+    | For Stmt Exp Stmt Block 
+    | Return (Maybe Exp) --
     | ExpStmt Exp
     | BlockStmt Block
     deriving (Show, Eq)

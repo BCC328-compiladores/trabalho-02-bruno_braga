@@ -65,6 +65,9 @@ library
                     Sl.Syntax.Syntax
                     Sl.Parser.Parser
                     Sl.Pretty.SlPretty
+                    Sl.Semantics.TypeChecker.EnvManipulation
+                    Sl.Semantics.TypeChecker.TypeDefinitions
+                    Sl.Semantics.TypeChecker.TypeChecker
                     Utils.Pretty
 
                     
@@ -78,8 +81,9 @@ library
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.18.2.1,
                     array,
-                    pretty,
-                    hpc
+                    containers,
+                    mtl,
+                    pretty
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -105,7 +109,6 @@ executable sl
         base ^>=4.18.2.1,
         containers,
         pretty,
-        hpc,
         tp1
 
     -- Directories containing source files.
@@ -128,7 +131,6 @@ executable test
         pretty,
         directory,
         filepath,
-        hpc,
         tp1
 
     hs-source-dirs: app
@@ -162,5 +164,4 @@ test-suite tp1-test
     -- Test dependencies.
     build-depends:
         base ^>=4.18.2.1,
-        hpc,
         tp1
